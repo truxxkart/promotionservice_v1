@@ -1,7 +1,10 @@
 package com.truxxkart.promotionservice_v1.serviceImpl;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,6 +71,107 @@ public class AdvertisementServiceImpl implements AdvertisementService {
 	            ads = advertisementRepo.findByActiveTrue();
 	        }
 	        return ads;
+	}
+
+	@Override
+	public List<Advertisement> getAdsByPlacement(AdPlacement placement) {
+		     
+		return advertisementRepo.findByPlacement(placement);
+	}
+
+	@Override
+	public List<Advertisement> findAdvertisementByStatus(String field, Boolean findBy) {
+		if(field.equalsIgnoreCase("ACTIVATION") ) {
+			return advertisementRepo.findAll().stream().filter(adv->adv.getActive()==findBy).collect(Collectors.toList());
+		}else if(field.equalsIgnoreCase("VERIFICATION") ) {
+			return advertisementRepo.findAll().stream().filter(adv->adv.getIsVerified()==findBy).collect(Collectors.toList());
+		}
+		return null;
+	}
+
+	@Override
+	public List<Advertisement> findAdvertisementByType(String advertisementType) {
+	
+		return advertisementRepo.findByAdvertisementType(advertisementType);
+	}
+
+	@Override
+	public List<Advertisement> findByDate(String field, LocalDate date) {
+		if(field.equalsIgnoreCase("START") ) {
+			return advertisementRepo.findAll().stream().filter(adv->adv.getStartDate().toLocalDate().equals(date)).collect(Collectors.toList());
+		}else if(field.equalsIgnoreCase("END") ) {
+			return advertisementRepo.findAll().stream().filter(adv->adv.getEndDate().toLocalDate().equals(date)).collect(Collectors.toList());
+		}
+		return null;
+	}
+
+	@Override
+	public Advertisement updateAdvertisementStatus(Long id, String field, Boolean toBeUpdated) {
+		Optional<Advertisement> optAdvertisement =advertisementRepo.findById(id);
+		if(optAdvertisement.isPresent()) {
+			Advertisement advertisement =optAdvertisement.get();
+			if(field.equalsIgnoreCase("ACTIVATION") ) {
+				advertisement.setActive(toBeUpdated);
+			}else if(field.equalsIgnoreCase("VERIFICATION") ) {
+				advertisement.setIsVerified(toBeUpdated);
+			}
+			return advertisementRepo.save(advertisement);
+		}
+		
+		return null;
+	}
+
+	@Override
+	public Advertisement updateAdvertisementField(Long id, String field, String toBeUpdated) {
+		Optional<Advertisement> optAdvertisement =advertisementRepo.findById(id);
+		if(optAdvertisement.isPresent()) {
+			Advertisement advertisement =optAdvertisement.get();
+			if(field.equalsIgnoreCase("TITLE") ) {
+				advertisement.setTitle(toBeUpdated);;
+			}else if(field.equalsIgnoreCase("IMAGEURL") ) {
+				//here remove img url of earlier img from CLOUDINARY
+				advertisement.setImageUrl(toBeUpdated);;
+			} else if(field.equalsIgnoreCase("REDIRECTURL") ) {
+				advertisement.setRedirectUrl(toBeUpdated);
+			} else if(field.equalsIgnoreCase("ADVERTISEMENTTYPE") ) {
+				advertisement.setAdvertisementType(toBeUpdated);;
+			}
+			
+			return advertisementRepo.save(advertisement);
+		}
+		
+		return null;
+	}
+
+	@Override
+	public List<Advertisement> findByActiveFalseAndStartDateBefore(LocalDateTime now) {
+		// TODO Auto-generated method stub
+		return advertisementRepo.findByActiveFalseAndStartDateBefore(now);
+	}
+
+	@Override
+	public List<Advertisement> findByActiveTrueAndEndDateBefore(LocalDateTime now) {
+		// TODO Auto-generated method stub
+		return advertisementRepo.findByActiveTrueAndEndDateBefore(now);
+	}
+
+	@Override
+	public Integer getClicksOrImpression(String field, Long advertisementId) {
+		Optional<Advertisement> optAdvertisement =advertisementRepo.findById(advertisementId);
+		if(optAdvertisement.isPresent()) {
+			Advertisement advertisement =optAdvertisement.get();
+		if(field.equalsIgnoreCase("CLICK") ) {
+		   return   advertisement.getClicks();
+		}else if(field.equalsIgnoreCase("IMPRESSION") ) {
+			return   advertisement.getImpressions();
+		}}
+		return null;
+	}
+
+	@Override
+	public List<Advertisement> getAllAds() {
+		// TODO Auto-generated method stub
+		return advertisementRepo.findAll();
 	}
 
 }
