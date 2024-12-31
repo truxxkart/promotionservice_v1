@@ -16,12 +16,12 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement, Lo
 //        AdPlacement placement, LocalDateTime now1, LocalDateTime now2
 //    );
 //    
-    List<Advertisement> findByPlacementAndActiveTrue(AdPlacement placement);
-    List<Advertisement> findByActiveTrue();
-    
-    
-    List<Advertisement> findByActiveFalseAndStartDateBefore(LocalDateTime now);
+	 List<Advertisement> findByPlacementAndActiveTrue(AdPlacement placement);
+	    List<Advertisement> findByActiveTrue();
+	    List<Advertisement> findByPlacement(AdPlacement placement);
+	    List<Advertisement> findByAdvertisementType(String advertisementType);
+	    List<Advertisement> findByActiveFalseAndStartDateBefore(LocalDateTime now);
 
-    List<Advertisement> findByActiveTrueAndEndDateBefore(LocalDateTime now);
-    
+	    List<Advertisement> findByActiveTrueAndEndDateBefore(LocalDateTime now);
+	    
 }
